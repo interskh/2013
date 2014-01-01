@@ -82,15 +82,20 @@ def avg_time(data)
   puts "#{avg_hour}:#{avg_min}"
 end
 
-def avg(data)
+def avg(data, thres=0)
   #pp data
   values = []
+  cnt = 0
   data.each do |_, list|
     list.each do |v|
+      if v["value"].to_i > thres
+        cnt += 1
+      end
       values << v["value"].to_i if v["value"] != "0"
     end
   end
-  puts values.inject(0.0) { |sum, el| sum + el } / values.size
+  avg = values.inject(0.0) { |sum, el| sum + el } / values.size
+  puts "avg: #{avg}, cnt: #{cnt}"
 end
 
 date_range = {:base_date => '2013-01-01', :end_date => '2013-12-30'}
@@ -108,7 +113,7 @@ puts "sleep/minutesToFallAsleep"
 avg client.data_by_time_range('/sleep/minutesToFallAsleep', date_range)
 
 puts "log/steps"
-avg client.data_by_time_range('/activities/log/steps', date_range)
+avg client.data_by_time_range('/activities/log/steps', date_range), 10000
 
 puts "log/floors"
 avg client.data_by_time_range('/activities/log/floors', date_range)
